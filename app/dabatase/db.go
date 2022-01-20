@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/juliazuin/AluraChallenge/app/model"
 	config "github.com/juliazuin/AluraChallenge/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -35,8 +34,6 @@ func connectDB() *gorm.DB {
 		fmt.Printf("Error connecting to database : error=%v", err)
 		return nil
 	}
-
-	db.AutoMigrate(model.Receitas{}, model.Despesas{})
 
 	return db
 }

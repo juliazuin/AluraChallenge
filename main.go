@@ -20,7 +20,7 @@ func setupRouter() *gin.Engine {
 	})
 
 	userRepo := controllers.New()
-	r.POST("/despesas", userRepo.PostDespesa)
+	r.POST("/despesas", userRepo.CreateDespesa)
 
 	return r
 }

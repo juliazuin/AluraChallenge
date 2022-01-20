@@ -15,12 +15,12 @@ type DespesasRepo struct {
 
 func New() *DespesasRepo {
 	db := database.InitDb()
-	db.AutoMigrate(&models.Despesas{})
+	db.AutoMigrate(&models.Despesas{}, &models.Receitas{})
 	return &DespesasRepo{Db: db}
 }
 
 // postAlbums adds an album from JSON received in the request body.
-func (d *DespesasRepo) PostDespesa(c *gin.Context) {
+func (d *DespesasRepo) CreateDespesa(c *gin.Context) {
 	var input models.Despesas
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -29,7 +29,12 @@ func (d *DespesasRepo) PostDespesa(c *gin.Context) {
 	}
 
 	// Add the new album to the slice.
-	teste := models.Despesas{Valor: input.Valor, Descricao: input.Descricao, DataAtual: input.DataAtual}
-	d.Db.Create(&teste)
-	c.JSON(http.StatusOK, gin.H{"data": teste})
+	despesa := models.Despesas{
+		Valor:     input.Valor,
+		Descricao: input.Descricao,
+		DataAtual: input.DataAtual,
+	}
+	
+	d.Db.Create(&despesa)
+	c.JSON(http.StatusOK, gin.H{"data": despesa})
 }
