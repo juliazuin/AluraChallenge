@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	database "github.com/juliazuin/AluraChallenge/dabatase"
-	models "github.com/juliazuin/AluraChallenge/model"
+	database "github.com/juliazuin/AluraChallenge/app/dabatase"
+	models "github.com/juliazuin/AluraChallenge/app/model"
 	"gorm.io/gorm"
 )
 

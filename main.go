@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	controllers "github.com/juliazuin/AluraChallenge/controller"
+	controllers "github.com/juliazuin/AluraChallenge/app/controller"
 )
 
 func main() {
