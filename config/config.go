@@ -3,20 +3,16 @@ package config
 import (
 	"log"
 
+	"github.com/go-playground/validator"
 	"github.com/spf13/viper"
 )
 
-type DatabaseConfigurations struct {
-	DBName     string
-	DBUser     string
-	DBPassword string
-	DBHost     string
-	DBPort     string
+type Config struct {
+	Viper    *viper.Viper
+	Validate *validator.Validate
 }
 
-type Config struct {
-	Viper *viper.Viper
-}
+var validate *validator.Validate
 
 func NewConfig() *Config {
 	viper.AddConfigPath(".")
@@ -32,8 +28,11 @@ func NewConfig() *Config {
 		log.Print("Config loaded...")
 	}
 
+	validate = validator.New()
+
 	return &Config{
-		Viper: viper.GetViper(),
+		Viper:    viper.GetViper(),
+		Validate: validate,
 	}
 
 }
