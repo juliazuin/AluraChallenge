@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	database "github.com/juliazuin/AluraChallenge/app/dabatase"
 	models "github.com/juliazuin/AluraChallenge/app/model"
 	"gorm.io/gorm"
 )
@@ -13,9 +12,7 @@ type DespesasController struct {
 	Db *gorm.DB
 }
 
-func NewDespesa() *DespesasController {
-	db := database.InitDb()
-	db.AutoMigrate(&models.Despesas{})
+func NewDespesa(db *gorm.DB) *DespesasController {
 	return &DespesasController{Db: db}
 }
 
@@ -23,7 +20,7 @@ func NewDespesa() *DespesasController {
 func (d *DespesasController) CreateDespesa(c *gin.Context) {
 	//var validate = validator.New()
 
-	var input models.Despesas
+	var input models.Despesa
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -35,7 +32,7 @@ func (d *DespesasController) CreateDespesa(c *gin.Context) {
 		return
 	}
 
-	despesa := models.Despesas{
+	despesa := models.Despesa{
 		Valor:     input.Valor,
 		Descricao: input.Descricao,
 		DataAtual: input.DataAtual,
@@ -61,7 +58,7 @@ func (d *DespesasController) CreateDespesa(c *gin.Context) {
 }
 
 func (d *DespesasController) UpdateDespesa(c *gin.Context) {
-	var input models.Despesas
+	var input models.Despesa
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -69,7 +66,7 @@ func (d *DespesasController) UpdateDespesa(c *gin.Context) {
 	}
 
 	despesaId := c.Param("id")
-	despesa := models.Despesas{}
+	despesa := models.Despesa{}
 
 	d.Db.First(&despesa, despesaId)
 
@@ -84,7 +81,7 @@ func (d *DespesasController) UpdateDespesa(c *gin.Context) {
 
 func (d *DespesasController) DeleteDespesa(c *gin.Context) {
 	despesaId := c.Param("id")
-	result := d.Db.Delete(&models.Despesas{}, despesaId)
+	result := d.Db.Delete(&models.Despesa{}, despesaId)
 	if result.RowsAffected > 0 {
 		c.JSON(http.StatusOK, gin.H{"data": "Regstro deletado com sucesso"})
 	} else {
@@ -95,7 +92,7 @@ func (d *DespesasController) DeleteDespesa(c *gin.Context) {
 
 func (d *DespesasController) DespesaById(c *gin.Context) {
 	despesaId := c.Param("id")
-	despesas := []models.Despesas{}
+	despesas := []models.Despesa{}
 	result := d.Db.First(&despesas, despesaId)
 	if result.RowsAffected > 0 {
 		c.JSON(http.StatusOK, gin.H{"data": &despesas})
@@ -105,7 +102,7 @@ func (d *DespesasController) DespesaById(c *gin.Context) {
 }
 
 func (d *DespesasController) ListDespesas(c *gin.Context) {
-	despesas := []models.Despesas{}
+	despesas := []models.Despesa{}
 	result := d.Db.Find(&despesas)
 	if result.RowsAffected > 0 {
 		c.JSON(http.StatusOK, gin.H{"data": &despesas})

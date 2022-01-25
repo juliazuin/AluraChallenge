@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	database "github.com/juliazuin/AluraChallenge/app/dabatase"
 	models "github.com/juliazuin/AluraChallenge/app/model"
 	"gorm.io/gorm"
 )
@@ -13,9 +12,7 @@ type ReceitasController struct {
 	Db *gorm.DB
 }
 
-func NewReceita() *ReceitasController {
-	db := database.InitDb()
-	db.AutoMigrate(&models.Receitas{})
+func NewReceita(db *gorm.DB) *ReceitasController {
 	return &ReceitasController{Db: db}
 }
 
@@ -23,7 +20,7 @@ func NewReceita() *ReceitasController {
 func (r *ReceitasController) CreateReceita(c *gin.Context) {
 	//var validate = validator.New()
 
-	var input models.Receitas
+	var input models.Receita
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -34,7 +31,7 @@ func (r *ReceitasController) CreateReceita(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"data": "Faltando valores"})
 	}
 
-	Receita := models.Receitas{
+	Receita := models.Receita{
 		Valor:     input.Valor,
 		Descricao: input.Descricao,
 		DataAtual: input.DataAtual,
@@ -60,7 +57,7 @@ func (r *ReceitasController) CreateReceita(c *gin.Context) {
 }
 
 func (r *ReceitasController) UpdateReceita(c *gin.Context) {
-	var input models.Receitas
+	var input models.Receita
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -68,7 +65,7 @@ func (r *ReceitasController) UpdateReceita(c *gin.Context) {
 	}
 
 	receitaId := c.Param("id")
-	receita := models.Receitas{}
+	receita := models.Receita{}
 
 	r.Db.First(&receita, receitaId)
 
@@ -83,7 +80,7 @@ func (r *ReceitasController) UpdateReceita(c *gin.Context) {
 
 func (r *ReceitasController) DeleteReceita(c *gin.Context) {
 	receitaId := c.Param("id")
-	result := r.Db.Delete(&models.Receitas{}, receitaId)
+	result := r.Db.Delete(&models.Receita{}, receitaId)
 	if result.RowsAffected > 0 {
 		c.JSON(http.StatusOK, gin.H{"data": "Regstro deletado com sucesso"})
 	} else {
@@ -93,7 +90,7 @@ func (r *ReceitasController) DeleteReceita(c *gin.Context) {
 
 func (r *ReceitasController) ReceitaById(c *gin.Context) {
 	receitaId := c.Param("id")
-	receitas := []models.Receitas{}
+	receitas := []models.Receita{}
 	result := r.Db.First(&receitas, receitaId)
 	if result.RowsAffected > 0 {
 		c.JSON(http.StatusOK, gin.H{"data": &receitas})
@@ -103,7 +100,7 @@ func (r *ReceitasController) ReceitaById(c *gin.Context) {
 }
 
 func (r *ReceitasController) ListReceitas(c *gin.Context) {
-	receitas := []models.Receitas{}
+	receitas := []models.Receita{}
 	result := r.Db.Find(&receitas)
 	if result.RowsAffected > 0 {
 		c.JSON(http.StatusOK, gin.H{"data": &receitas})

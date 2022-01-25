@@ -1,7 +1,6 @@
 package controller
 
 import (
-	database "github.com/juliazuin/AluraChallenge/app/dabatase"
 	models "github.com/juliazuin/AluraChallenge/app/model"
 	"gorm.io/gorm"
 )
@@ -10,22 +9,19 @@ type CategoriaController struct {
 	Db *gorm.DB
 }
 
-func NewCategoria() *CategoriaController {
-	db := database.InitDb()
-	db.AutoMigrate(&models.Categorias{})
+func NewCategoria(db *gorm.DB) *CategoriaController {
 	return &CategoriaController{Db: db}
 }
 
 func (c *CategoriaController) SeedCategorias() {
-	c.Db.Model(&models.Categorias{}).Create([]map[string]interface{}{
-		{"Name": "Alimentação"},
-		{"Name": "Saúde"},
-		{"Name": "Moradia"},
-		{"Name": "Transporte"},
-		{"Name": "Educação"},
-		{"Name": "Lazer"},
-		{"Name": "Imprevistos"},
-		{"Name": "Outras"},
+	c.Db.Model(&models.Categoria{}).Create([]map[string]interface{}{
+		{"nome": "Alimentação"},
+		{"nome": "Saúde"},
+		{"nome": "Moradia"},
+		{"nome": "Transporte"},
+		{"nome": "Educação"},
+		{"nome": "Lazer"},
+		{"nome": "Imprevistos"},
+		{"nome": "Outras"},
 	})
-	return
 }

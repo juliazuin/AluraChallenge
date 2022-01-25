@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/juliazuin/AluraChallenge/app/model"
 	config "github.com/juliazuin/AluraChallenge/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -17,11 +18,17 @@ var host = c.Viper.GetString("database.host")                            // os.G
 var name = c.Viper.GetString("database.name")                            // os.Getenv("DB_NAME")
 var port = c.Viper.GetString("database.port")                            // os.Getenv("DB_PORT")
 
-var Db *gorm.DB
 
-func InitDb() *gorm.DB {
-	Db = connectDB()
-	return Db
+type DatabaseConfig struct {
+	Db *gorm.DB
+}
+
+func NewDB() *DatabaseConfig {
+	database := connectDB()
+	database.AutoMigrate(&model.Despesa{}, &model.Categoria{}, &model.Receita{})
+
+	//controller.NewCategoria().SeedCategorias()
+	return &DatabaseConfig{Db: database}
 }
 
 func connectDB() *gorm.DB {
@@ -34,6 +41,5 @@ func connectDB() *gorm.DB {
 		fmt.Printf("Error connecting to database : error=%v", err)
 		return nil
 	}
-
 	return db
 }

@@ -2,7 +2,7 @@ package model
 
 import "gorm.io/gorm"
 
-type Receitas struct {
+type Receita struct {
 	//gorm.Model includes ID, CratedAt, UpdatedAt and DeletedAt fields out of the box
 	gorm.Model
 	// ID        uint    `json:"id" gorm:"primaryKey"`
