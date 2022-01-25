@@ -1,26 +1,32 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	controllers "github.com/juliazuin/AluraChallenge/app/controller"
 )
 
 func main() {
-	r := setupRouter()
-	_ = r.Run(":8080")
+	setupRouter().Run(":8080")
 }
 
 func setupRouter() *gin.Engine {
 	r := gin.Default()
 
-	r.GET("ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, "pong")
-	})
+	//Despesas rouutes
+	despesaController := controllers.NewDespesa()
+	r.POST("/despesas", despesaController.CreateDespesa)
+	r.PUT("/despesas/:id", despesaController.UpdateDespesa)
+	r.DELETE("/despesas/:id", despesaController.DeleteDespesa)
+	r.GET("/despesas/:id", despesaController.DespesaById)
+	r.GET("/despesas", despesaController.ListDespesas)
 
-	userRepo := controllers.New()
-	r.POST("/despesas", userRepo.CreateDespesa)
+	//Receitas Routes
+	receitaController := controllers.NewReceita()
+	r.POST("/receitas", receitaController.CreateReceita)
+	r.PUT("/receitas/:id", receitaController.UpdateReceita)
+	r.DELETE("/receitas/:id", receitaController.DeleteReceita)
+	r.GET("/receitas/:id", receitaController.ReceitaById)
+	r.GET("/receitas", receitaController.ListReceitas)
 
 	return r
 }

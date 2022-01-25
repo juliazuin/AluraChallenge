@@ -9,18 +9,18 @@ import (
 	"gorm.io/gorm"
 )
 
-type DespesasRepo struct {
+type DespesasController struct {
 	Db *gorm.DB
 }
 
-func New() *DespesasRepo {
+func NewDespesa() *DespesasController {
 	db := database.InitDb()
 	db.AutoMigrate(&models.Despesas{})
-	return &DespesasRepo{Db: db}
+	return &DespesasController{Db: db}
 }
 
 // postAlbums adds an album from JSON received in the request body.
-func (d *DespesasRepo) CreateDespesa(c *gin.Context) {
+func (d *DespesasController) CreateDespesa(c *gin.Context) {
 	//var validate = validator.New()
 
 	var input models.Despesas
@@ -32,6 +32,7 @@ func (d *DespesasRepo) CreateDespesa(c *gin.Context) {
 
 	if input.Valor != 0 || input.Descricao != "" || input.DataAtual != "" {
 		c.JSON(http.StatusBadRequest, gin.H{"data": "Faltando valores"})
+		return
 	}
 
 	despesa := models.Despesas{
@@ -59,14 +60,56 @@ func (d *DespesasRepo) CreateDespesa(c *gin.Context) {
 	  }*/
 }
 
-func (*DespesasRepo) UpdateDespesa(c *gin.Context) {
+func (d *DespesasController) UpdateDespesa(c *gin.Context) {
+	var input models.Despesas
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	despesaId := c.Param("id")
+	despesa := models.Despesas{}
+
+	d.Db.First(&despesa, despesaId)
+
+	despesa.Descricao = input.Descricao
+	despesa.Valor = input.Valor
+	despesa.DataAtual = input.DataAtual
+
+	d.Db.Save(&despesa)
+
+	c.JSON(http.StatusOK, gin.H{"data": &despesa})
+}
+
+func (d *DespesasController) DeleteDespesa(c *gin.Context) {
+	despesaId := c.Param("id")
+	result := d.Db.Delete(&models.Despesas{}, despesaId)
+	if result.RowsAffected > 0 {
+		c.JSON(http.StatusOK, gin.H{"data": "Regstro deletado com sucesso"})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"data": "Nenhum registro com esse ID"})
+	}
 
 }
 
-func (*DespesasRepo) DeleteDespesa(c *gin.Context) {
-
+func (d *DespesasController) DespesaById(c *gin.Context) {
+	despesaId := c.Param("id")
+	despesas := []models.Despesas{}
+	result := d.Db.First(&despesas, despesaId)
+	if result.RowsAffected > 0 {
+		c.JSON(http.StatusOK, gin.H{"data": &despesas})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"data": "Nenhum registro com esse ID"})
+	}
 }
 
-func (*DespesasRepo) DespesaById(c *gin.Context) {
-
+func (d *DespesasController) ListDespesas(c *gin.Context) {
+	despesas := []models.Despesas{}
+	result := d.Db.Find(&despesas)
+	if result.RowsAffected > 0 {
+		c.JSON(http.StatusOK, gin.H{"data": &despesas})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"data": "Nenhum registro"})
+	}
 }

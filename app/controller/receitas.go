@@ -9,18 +9,18 @@ import (
 	"gorm.io/gorm"
 )
 
-type ReceitasRepo struct {
+type ReceitasController struct {
 	Db *gorm.DB
 }
 
-func New() *ReceitasRepo {
+func NewReceita() *ReceitasController {
 	db := database.InitDb()
 	db.AutoMigrate(&models.Receitas{})
-	return &ReceitasRepo{Db: db}
+	return &ReceitasController{Db: db}
 }
 
 // postAlbums adds an album from JSON received in the request body.
-func (d *ReceitasRepo) CreateReceita(c *gin.Context) {
+func (r *ReceitasController) CreateReceita(c *gin.Context) {
 	//var validate = validator.New()
 
 	var input models.Receitas
@@ -30,7 +30,7 @@ func (d *ReceitasRepo) CreateReceita(c *gin.Context) {
 		return
 	}
 
-	if input.Valor != 0 || input.Descricao != "" || input.DataAtual != "" {
+	if input.Valor == 0 || input.Descricao == "" || input.DataAtual == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"data": "Faltando valores"})
 	}
 
@@ -40,7 +40,7 @@ func (d *ReceitasRepo) CreateReceita(c *gin.Context) {
 		DataAtual: input.DataAtual,
 	}
 
-	retorno := d.Db.Create(&Receita)
+	retorno := r.Db.Create(&Receita)
 
 	if retorno.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"data": retorno.Error.Error()})
@@ -59,14 +59,55 @@ func (d *ReceitasRepo) CreateReceita(c *gin.Context) {
 	  }*/
 }
 
-func (*ReceitasRepo) UpdateReceita(c *gin.Context) {
+func (r *ReceitasController) UpdateReceita(c *gin.Context) {
+	var input models.Receitas
 
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	receitaId := c.Param("id")
+	receita := models.Receitas{}
+
+	r.Db.First(&receita, receitaId)
+
+	receita.Descricao = input.Descricao
+	receita.Valor = input.Valor
+	receita.DataAtual = input.DataAtual
+
+	r.Db.Save(&receita)
+
+	c.JSON(http.StatusOK, gin.H{"data": &receita})
 }
 
-func (*ReceitasRepo) DeleteReceita(c *gin.Context) {
-
+func (r *ReceitasController) DeleteReceita(c *gin.Context) {
+	receitaId := c.Param("id")
+	result := r.Db.Delete(&models.Receitas{}, receitaId)
+	if result.RowsAffected > 0 {
+		c.JSON(http.StatusOK, gin.H{"data": "Regstro deletado com sucesso"})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"data": "Nenhum registro com esse ID"})
+	}
 }
 
-func (*ReceitasRepo) ReceitaById(c *gin.Context) {
+func (r *ReceitasController) ReceitaById(c *gin.Context) {
+	receitaId := c.Param("id")
+	receitas := []models.Receitas{}
+	result := r.Db.First(&receitas, receitaId)
+	if result.RowsAffected > 0 {
+		c.JSON(http.StatusOK, gin.H{"data": &receitas})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"data": "Nenhum registro com esse ID"})
+	}
+}
 
+func (r *ReceitasController) ListReceitas(c *gin.Context) {
+	receitas := []models.Receitas{}
+	result := r.Db.Find(&receitas)
+	if result.RowsAffected > 0 {
+		c.JSON(http.StatusOK, gin.H{"data": &receitas})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"data": "Nenhum registro"})
+	}
 }
