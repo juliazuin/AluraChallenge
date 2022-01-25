@@ -4,7 +4,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Despesa struct {
+type Teste struct {
 	gorm.Model
 	// ID        uint    `json:"id" gorm:"primaryKey"`
 	Valor       float64 `json:"valor" gorm:"not null"`

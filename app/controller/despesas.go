@@ -18,7 +18,6 @@ func NewDespesa(db *gorm.DB) *DespesasController {
 
 // postAlbums adds an album from JSON received in the request body.
 func (d *DespesasController) CreateDespesa(c *gin.Context) {
-	//var validate = validator.New()
 
 	var input models.Despesa
 
@@ -27,15 +26,22 @@ func (d *DespesasController) CreateDespesa(c *gin.Context) {
 		return
 	}
 
-	if input.Valor != 0 || input.Descricao != "" || input.DataAtual != "" {
+	// if any value is empty return bad request
+	if input.Valor == 0 || input.Descricao == "" || input.DataAtual == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"data": "Faltando valores"})
 		return
 	}
 
+	// if categoria_id is empty return categoria_id=8 (outras)
+	if input.CategoriaId == 0 {
+		input.CategoriaId = 8
+	}
+
 	despesa := models.Despesa{
-		Valor:     input.Valor,
-		Descricao: input.Descricao,
-		DataAtual: input.DataAtual,
+		Valor:       input.Valor,
+		Descricao:   input.Descricao,
+		DataAtual:   input.DataAtual,
+		CategoriaId: input.CategoriaId,
 	}
 
 	retorno := d.Db.Create(&despesa)
@@ -45,16 +51,6 @@ func (d *DespesasController) CreateDespesa(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, gin.H{"data": despesa})
 	}
-	/*errs := validate.Struct(despesa)
-	  print(errs)
-	  if len(errs.(validator.ValidationErrors)) > 0 {
-	  	fmt.Printf("Errs:\n%+v\n", errs)
-	  	c.JSON(http.StatusBadRequest, gin.H{"data": "Faltando valores"})
-
-	  } else {
-	  	d.Db.Create(&despesa)
-	  	c.JSON(http.StatusOK, gin.H{"data": despesa})
-	  }*/
 }
 
 func (d *DespesasController) UpdateDespesa(c *gin.Context) {
