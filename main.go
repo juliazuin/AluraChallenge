@@ -7,11 +7,15 @@ import (
 
 func main() {
 	setupRouter().Run(":8080")
+	createCategories()
 }
 
 func setupRouter() *gin.Engine {
 	r := gin.Default()
 
+	// init categories and seed table
+	controllers.NewCategoria().SeedCategorias()
+	
 	//Despesas rouutes
 	despesaController := controllers.NewDespesa()
 	r.POST("/despesas", despesaController.CreateDespesa)
@@ -29,4 +33,8 @@ func setupRouter() *gin.Engine {
 	r.GET("/receitas", receitaController.ListReceitas)
 
 	return r
+}
+
+func createCategories() {
+
 }
