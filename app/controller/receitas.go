@@ -16,9 +16,7 @@ func NewReceita(db *gorm.DB) *ReceitasController {
 	return &ReceitasController{Db: db}
 }
 
-// postAlbums adds an album from JSON received in the request body.
 func (r *ReceitasController) CreateReceita(c *gin.Context) {
-	//var validate = validator.New()
 
 	var input models.Receita
 
@@ -44,16 +42,6 @@ func (r *ReceitasController) CreateReceita(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, gin.H{"data": Receita})
 	}
-	/*errs := validate.Struct(Receita)
-	  print(errs)
-	  if len(errs.(validator.ValidationErrors)) > 0 {
-	  	fmt.Printf("Errs:\n%+v\n", errs)
-	  	c.JSON(http.StatusBadRequest, gin.H{"data": "Faltando valores"})
-
-	  } else {
-	  	d.Db.Create(&Receita)
-	  	c.JSON(http.StatusOK, gin.H{"data": Receita})
-	  }*/
 }
 
 func (r *ReceitasController) UpdateReceita(c *gin.Context) {
@@ -101,7 +89,29 @@ func (r *ReceitasController) ReceitaById(c *gin.Context) {
 
 func (r *ReceitasController) ListReceitas(c *gin.Context) {
 	receitas := []models.Receita{}
-	result := r.Db.Find(&receitas)
+
+	var result *gorm.DB
+
+	if queryParams := c.Request.URL.Query().Get("descricao"); queryParams != "" {
+		result = r.Db.Where("descricao LIKE ?", "%"+queryParams+"%").Find(&receitas)
+	} else {
+		result = r.Db.Find(&receitas)
+	}
+	if result.RowsAffected > 0 {
+		c.JSON(http.StatusOK, gin.H{"data": &receitas})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"data": "Nenhum registro"})
+	}
+}
+
+func (r *ReceitasController) ListReceitaByMonth(c *gin.Context) {
+	receitas := []models.Receita{}
+
+	receitaYear := c.Param("year")
+	receitaMonth := c.Param("month")
+
+	result := r.Db.Where("data_atual LIKE ?", "%"+receitaMonth+"/"+receitaYear+"%").Find(&receitas)
+
 	if result.RowsAffected > 0 {
 		c.JSON(http.StatusOK, gin.H{"data": &receitas})
 	} else {

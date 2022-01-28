@@ -16,7 +16,6 @@ func NewDespesa(db *gorm.DB) *DespesasController {
 	return &DespesasController{Db: db}
 }
 
-// postAlbums adds an album from JSON received in the request body.
 func (d *DespesasController) CreateDespesa(c *gin.Context) {
 
 	var input models.Despesa
@@ -99,7 +98,28 @@ func (d *DespesasController) DespesaById(c *gin.Context) {
 
 func (d *DespesasController) ListDespesas(c *gin.Context) {
 	despesas := []models.Despesa{}
-	result := d.Db.Find(&despesas)
+	var result *gorm.DB
+
+	if queryParams := c.Request.URL.Query().Get("descricao"); queryParams != "" {
+		result = d.Db.Where("descricao LIKE ?", "%"+queryParams+"%").Find(&despesas)
+	} else {
+		result = d.Db.Find(&despesas)
+	}
+	if result.RowsAffected > 0 {
+		c.JSON(http.StatusOK, gin.H{"data": &despesas})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"data": "Nenhum registro"})
+	}
+}
+
+func (d *DespesasController) ListDespesaByMonth(c *gin.Context) {
+	despesas := []models.Despesa{}
+
+	despesaYear := c.Param("year")
+	despesaMonth := c.Param("month")
+
+	result := d.Db.Where("data_atual LIKE ?", "%"+despesaYear+"/"+despesaMonth+"%").Find(&despesas)
+
 	if result.RowsAffected > 0 {
 		c.JSON(http.StatusOK, gin.H{"data": &despesas})
 	} else {

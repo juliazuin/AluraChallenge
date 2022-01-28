@@ -25,19 +25,33 @@ func setupRouter(db *gorm.DB) *gin.Engine {
 
 	//Despesas rouutes
 	despesaController := controllers.NewDespesa(db)
-	r.POST("/despesas", despesaController.CreateDespesa)
-	r.PUT("/despesas/:id", despesaController.UpdateDespesa)
-	r.DELETE("/despesas/:id", despesaController.DeleteDespesa)
-	r.GET("/despesas/:id", despesaController.DespesaById)
-	r.GET("/despesas", despesaController.ListDespesas)
+	apiDespesas := r.Group("/despesas")
+	{
+		apiDespesas.POST("", despesaController.CreateDespesa)
+		apiDespesas.PUT("/:id", despesaController.UpdateDespesa)
+		apiDespesas.DELETE("/:id", despesaController.DeleteDespesa)
+		apiDespesas.GET("/:id", despesaController.DespesaById)
+		apiDespesas.GET("", despesaController.ListDespesas)
+	}
+
+	r.GET("despesa/:year/:month", despesaController.ListDespesaByMonth)
 
 	//Receitas Routes
 	receitaController := controllers.NewReceita(db)
-	r.POST("/receitas", receitaController.CreateReceita)
-	r.PUT("/receitas/:id", receitaController.UpdateReceita)
-	r.DELETE("/receitas/:id", receitaController.DeleteReceita)
-	r.GET("/receitas/:id", receitaController.ReceitaById)
-	r.GET("/receitas", receitaController.ListReceitas)
+	apiReceitas := r.Group("/receitas")
+	{
+		apiReceitas.POST("", receitaController.CreateReceita)
+		apiReceitas.PUT("/:id", receitaController.UpdateReceita)
+		apiReceitas.DELETE("/:id", receitaController.DeleteReceita)
+		apiReceitas.GET("/:id", receitaController.ReceitaById)
+		apiReceitas.GET("", receitaController.ListReceitas)
+	}
+
+	r.GET("/receita/:year/:month", receitaController.ListReceitaByMonth)
+
+	// resumo
+	resumoController := controllers.NewResumo(db)
+	r.GET("/resumo/:year/:month", resumoController.ListResumoByMonth)
 
 	return r
 }

@@ -7,12 +7,15 @@ import (
 	"testing"
 
 	"github.com/go-playground/assert/v2"
+	database "github.com/juliazuin/AluraChallenge/app/dabatase"
 )
 
 func TestPingRoute(t *testing.T) {
+
+	db := database.NewDB()
 	// The setupServer method, that we previously refactored
 	// is injected into a test server
-	ts := httptest.NewServer(setupRouter())
+	ts := httptest.NewServer(setupRouter(db.Db))
 
 	// Shut down the server and block until all requests have gone through
 	defer ts.Close()
@@ -33,5 +36,4 @@ func TestPingRoute(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, resp.Status)
 
-	
 }

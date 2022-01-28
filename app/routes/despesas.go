@@ -13,7 +13,14 @@ func (r *DespesaRoute) Setup() {
 	routes := gin.Default()
 
 	routes.POST("/despesas", r.despesaController.CreateDespesa)
+	routes.PUT("/despesas/:id", r.despesaController.UpdateDespesa)
+	routes.DELETE("/despesas/:id", r.despesaController.DeleteDespesa)
+	routes.GET("/despesas/:id", r.despesaController.DespesaById)
 	routes.GET("/despesas", r.despesaController.ListDespesas)
-	routes.PUT("/despesas", r.despesaController.UpdateDespesa)
-	routes.POST("/despesas", r.despesaController.CreateDespesa)
+}
+
+func NewDespesaRoute(despesaController *controller.DespesasController) *DespesaRoute {
+	return &DespesaRoute{
+		despesaController: despesaController,
+	}
 }
