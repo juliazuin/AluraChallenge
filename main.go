@@ -21,7 +21,7 @@ func setupRouter(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 
 	// init categories and seed table
-	controllers.NewCategoria(db).SeedCategorias()
+	//controllers.NewCategoria(db).SeedCategorias()
 
 	//Despesas rouutes
 	despesaController := controllers.NewDespesa(db)

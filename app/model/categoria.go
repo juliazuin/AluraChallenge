@@ -7,7 +7,11 @@ type Categoria struct {
 	ID   int    `gorm:"primaryKey"`
 	Nome string `json:"nome"`
 	//Despesas    []Despesa    `gorm:"foreignKey:UserRefer"`
-	//Despesas []Despesa `gorm:"foreignKey:CategoriaId"`
+	Despesas []Despesa `gorm:"foreignKey:CategoriaId"`
+}
+
+type DespesaByCategory struct {
+	Results []Despesa `json:"results"`
 }
 
 type Despesa struct {

@@ -1,5 +1,10 @@
 package routes
 
+/*var Module := fx.Options{
+	fx.Provide(NewReceitaRoute)
+	fx.Provide(NewDespesaRoute)
+}*/
+
 type Routes []Route
 
 type Route interface {

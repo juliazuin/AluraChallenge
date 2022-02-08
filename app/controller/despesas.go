@@ -87,7 +87,7 @@ func (d *DespesasController) DeleteDespesa(c *gin.Context) {
 
 func (d *DespesasController) DespesaById(c *gin.Context) {
 	despesaId := c.Param("id")
-	despesas := []models.Despesa{}
+	var despesas []models.Despesa
 	result := d.Db.First(&despesas, despesaId)
 	if result.RowsAffected > 0 {
 		c.JSON(http.StatusOK, gin.H{"data": &despesas})
@@ -97,7 +97,7 @@ func (d *DespesasController) DespesaById(c *gin.Context) {
 }
 
 func (d *DespesasController) ListDespesas(c *gin.Context) {
-	despesas := []models.Despesa{}
+	var despesas []models.Despesa
 	var result *gorm.DB
 
 	if queryParams := c.Request.URL.Query().Get("descricao"); queryParams != "" {
@@ -113,7 +113,7 @@ func (d *DespesasController) ListDespesas(c *gin.Context) {
 }
 
 func (d *DespesasController) ListDespesaByMonth(c *gin.Context) {
-	despesas := []models.Despesa{}
+	var despesas []models.Despesa
 
 	despesaYear := c.Param("year")
 	despesaMonth := c.Param("month")

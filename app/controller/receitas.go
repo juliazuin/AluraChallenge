@@ -78,7 +78,7 @@ func (r *ReceitasController) DeleteReceita(c *gin.Context) {
 
 func (r *ReceitasController) ReceitaById(c *gin.Context) {
 	receitaId := c.Param("id")
-	receitas := []models.Receita{}
+	var receitas []models.Receita
 	result := r.Db.First(&receitas, receitaId)
 	if result.RowsAffected > 0 {
 		c.JSON(http.StatusOK, gin.H{"data": &receitas})
@@ -88,7 +88,7 @@ func (r *ReceitasController) ReceitaById(c *gin.Context) {
 }
 
 func (r *ReceitasController) ListReceitas(c *gin.Context) {
-	receitas := []models.Receita{}
+	var receitas []models.Receita
 
 	var result *gorm.DB
 
@@ -105,7 +105,7 @@ func (r *ReceitasController) ListReceitas(c *gin.Context) {
 }
 
 func (r *ReceitasController) ListReceitaByMonth(c *gin.Context) {
-	receitas := []models.Receita{}
+	var receitas []models.Receita
 
 	receitaYear := c.Param("year")
 	receitaMonth := c.Param("month")
