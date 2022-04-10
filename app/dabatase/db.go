@@ -2,10 +2,10 @@ package database
 
 import (
 	"fmt"
+	"github.com/juliazuin/AluraChallenge/app/config"
 	"strings"
 
 	"github.com/juliazuin/AluraChallenge/app/model"
-	"github.com/juliazuin/AluraChallenge/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

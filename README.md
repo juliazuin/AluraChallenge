@@ -1,6 +1,9 @@
 # AluraChallenge
 #alurachallengeback2
 
+Project created in Go, using GIN to expose /receitas and /despesas endpoints.
+Needs MySQL database to work and env.yaml with [username, password, name, host, port] db credentials.
+
 
 build image docker
 ````shell
